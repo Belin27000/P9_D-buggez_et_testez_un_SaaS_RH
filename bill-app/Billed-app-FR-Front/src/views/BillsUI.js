@@ -28,6 +28,7 @@ const rows = (data) => {
   return dates.map(bill => row(bill)).join("") //Puis on retourne la liste des notre de frais triées concatener.
   // return (data && data.length) ? data.map(bill => row(bill)).join("") : ""
 }
+
 export default ({ data: bills, loading, error }) => {
 
   const modal = () => (`
