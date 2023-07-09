@@ -26,6 +26,8 @@ describe("Given I am connected as an employee", () => {
       await waitFor(() => screen.getByTestId('icon-window'))
       const windowIcon = screen.getByTestId('icon-window')
       //to-do write expect expression
+      //On verifie que la classe est active pour highlighted l'icone.
+      expect(windowIcon.classList.contains('active-icon')).toEqual(true)
 
     })
     test("Then bills should be ordered from earliest to latest", () => {
