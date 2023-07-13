@@ -5,7 +5,10 @@ import { ROUTES_PATH } from '../constants/routes.js'
 import USERS_TEST from '../constants/usersTest.js'
 import Logout from "./Logout.js"
 
+let currentBill = ""; // On initialise une variable à vide qui servira à récupérer l'id du ticket.
+
 export const filteredBills = (data, status) => {
+  console.log(data)
   return (data && data.length) ?
     data.filter(bill => {
       let selectCondition
@@ -86,42 +89,24 @@ export default class {
   }
 
   handleEditTicket(e, bill, bills) {
-    console.log(e);// test si c'est ça
-    console.log(bill);// test si c'est ça
-    console.log(bills);// test si c'est ça
-    if (this.id !== bill.id) {
-      this.control = 1
-    } else {
-      this.control = 0
-    }
     if (this.counter === undefined || this.id !== bill.id) this.counter = 0
     if (this.id === undefined || this.id !== bill.id) this.id = bill.id
-    if (this.counter === 0) {
-      $('.dashboard-right-container div').html("")
+    if (this.counter % 2 === 0) {
       bills.forEach(b => {
         $(`#open-bill${b.id}`).css({ background: '#0D5AE5' })
-
       })
       $(`#open-bill${bill.id}`).css({ background: '#2A2B35' })
       $('.dashboard-right-container div').html(DashboardFormUI(bill))
       $('.vertical-navbar').css({ height: '150vh' })
-      // this.counter++
-
-    }
-    else {
-      // bills.forEach(b => {
-      //   $('.dashboard-right-container div').html(DashboardFormUI(bill))
-      //   $(`#open-bill${b.id}`).css({ background: '#0D5AE5' })
-
-      // })
+      this.counter++
+    } else {
+      $(`#open-bill${bill.id}`).css({ background: '#0D5AE5' })
 
       $('.dashboard-right-container div').html(`
         <div id="big-billed-icon" data-testid="big-billed-icon"> ${BigBilledIcon} </div>
       `)
-      $(`#open-bill${bill.id}`).css({ background: '#2A2B35' })
-
       $('.vertical-navbar').css({ height: '120vh' })
-      // this.counter++
+      this.counter++
     }
     $('#icon-eye-d').click(this.handleClickIconEye)
     $('#btn-accept-bill').click((e) => this.handleAcceptSubmit(e, bill))
@@ -149,6 +134,7 @@ export default class {
   }
 
   handleShowTickets(e, bills, index) {
+
     if (this.counter === undefined || this.index !== index) this.counter = 0
     if (this.index === undefined || this.index !== index) this.index = index
     if (this.counter % 2 === 0) {
@@ -163,11 +149,19 @@ export default class {
       this.counter++
     }
 
+    // Correction BUG n°4
+    // Utilisation variable currentBill pour parcourir les différents tickets.
     bills.forEach(bill => {
-      $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills))
+      $(`#open-bill${bill.id}`).click((e) => {
+        if (currentBill !== bill.id) { // On vérifie si le ticket selectionné n'a pas le même id que la variable currentBill et si c'est le cas on appelle la fonction handleEditTicket.
+          this.handleEditTicket(e, bill, bills)
+        }
+        currentBill = bill.id // On mets à jour la variable currentBill avec l'id actuel du ticket pour ne pas appeler plusieurs fois la fonction.
+      })
     })
 
     return bills
+
 
   }
 
