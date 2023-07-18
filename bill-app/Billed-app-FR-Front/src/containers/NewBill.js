@@ -21,6 +21,7 @@ export default class NewBill {
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length - 1]
     const errorMessage = this.document.querySelector(".message-error");
+    console.log(errorMessage);
     let extension = fileName.split(".").pop() // On récupère l'extension du fichier selectionné
     const formData = new FormData()
     const email = JSON.parse(localStorage.getItem("user")).email

@@ -5,7 +5,7 @@
 import { screen, waitFor, fireEvent } from "@testing-library/dom"
 import userEvent from "@testing-library/user-event";
 import { expect, jest, test } from '@jest/globals';
-
+import '@testing-library/jest-dom';
 import NewBillUI from "../views/NewBillUI.js";
 import NewBill from "../containers/NewBill.js"
 import BillsUI from "../views/BillsUI.js";
@@ -73,34 +73,10 @@ describe("Given I am connected as an employee", () => {
   })
 })
 
-describe("When I am on NewBill Page and I upload a file with valid format", () => {
-  document.body.innerHTML = NewBillUI();
+describe("Given I am connected as an employee", () => {
 
-  const onNavigate = (pathname) => {
-    document.body.innerHTML = ROUTES({ pathname });
-  };
 
-  let newBillPage = new NewBill({ document, onNavigate, store: mockStore, localStorage: window.localStorage });
-
-  const mockHandleChangeFile = jest.fn(newBillPage.handleChangeFile);
-  const inputFile = screen.getByTestId("file");
-  const file = new File(["image"], "image.jpg", { type: "image/jpg" });
-  inputFile.addEventListener("change", mockHandleChangeFile);
-  userEvent.upload(inputFile, file);
-
-  test("Then it should call the handleChangeFile function", () => {
-    expect(mockHandleChangeFile).toHaveBeenCalled();
-    expect(inputFile.files[0]).toStrictEqual(file)
-  })
-
-  test("Then it should update the input field", () => {
-    expect(inputFile.files[0].name).toBe("image.jpg");
-  })
-
-})
-
-describe("When the file format is not valid", () => {
-  test("Then an error message appear", async () => {
+  describe("When I am on NewBill Page and I upload a file with valid format", () => {
     document.body.innerHTML = NewBillUI();
 
     const onNavigate = (pathname) => {
@@ -109,7 +85,52 @@ describe("When the file format is not valid", () => {
 
     let newBillPage = new NewBill({ document, onNavigate, store: mockStore, localStorage: window.localStorage });
 
+    const mockHandleChangeFile = jest.fn(newBillPage.handleChangeFile);
+    const inputFile = screen.getByTestId("file");
+    const file = new File(["image"], "image.jpg", { type: "image/jpg" });
+    inputFile.addEventListener("change", mockHandleChangeFile);
+    userEvent.upload(inputFile, file);
+
+    test("Then it should call the handleChangeFile function", () => {
+      expect(mockHandleChangeFile).toHaveBeenCalled();
+      expect(inputFile.files[0]).toStrictEqual(file)
+    })
+
+    test("Then it should update the input field", () => {
+      expect(inputFile.files[0].name).toBe("image.jpg");
+    })
+
   })
+})
+
+describe("Given I am connected as an employee", () => {
+
+  describe("When the file format is not valid", () => {
+
+    test("Then an error message appear", async () => {
+
+      document.body.innerHTML = NewBillUI();
+
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname });
+      };
+
+      let newBillPage = new NewBill({ document, onNavigate, store: mockStore, localStorage: window.localStorage });
+
+      const mockEvent = {
+        preventDefault: jest.fn(),
+        target: {
+          value: 'path/to/file.pdf'
+        }
+      }
+
+      newBillPage.handleChangeFile(mockEvent)
+      expect(screen.getByText("Merci de saisir un format valide, jpg, jpeg, png")).not.toHaveClass('hidden')
+
+    })
+  })
+
+
 })
 
 // Test d'intégration POST
